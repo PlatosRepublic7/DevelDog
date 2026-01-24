@@ -1,0 +1,5 @@
+# ninja log v5
+0	263	1769277355426690043	CMakeFiles/devel_dog.dir/src/terminal.cpp.o	4b7a3c3fe253b133
+0	833	1769277355996795233	CMakeFiles/devel_dog.dir/src/main.cpp.o	72913b4e8b0b0327
+0	2275	1769277357437060977	CMakeFiles/devel_dog.dir/external/devel.cpp.o	ef7b96b4725624c8
+2275	2390	1769277357557083118	/home/ryan/projects/devel_dog/release/devel_dog	927186e2eed6f500

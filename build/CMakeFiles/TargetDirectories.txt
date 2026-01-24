@@ -1,0 +1,3 @@
+/home/ryan/projects/devel_dog/build/CMakeFiles/devel_dog.dir
+/home/ryan/projects/devel_dog/build/CMakeFiles/edit_cache.dir
+/home/ryan/projects/devel_dog/build/CMakeFiles/rebuild_cache.dir
