@@ -1,5 +1,5 @@
 #include "cpu.h"
-#include "terminal.h"
+#include "devel.h"
 #include <chrono>
 #include <string>
 #include <thread>
@@ -13,7 +13,7 @@ int main() {
     const std::string PROC_PATH = "/proc/stat";
 
     try {
-        Terminal term;
+        DevelDog dd = DevelDog();
         CPUDog cpu_dog = CPUDog(PROC_PATH);
 
         bool running = true;
@@ -27,14 +27,14 @@ int main() {
                 if (c == 'q')
                     running = false;
             }
-            term.move_cursor(0, 0);
-            term.write("Frames Processed: " + std::to_string(frame_count++));
-            term.move_cursor(0, 1);
-            term.write("Press 'q' to exit...");
-            term.move_cursor(0, 2);
+            dd.move_cursor(0, 0);
+            dd.write("Frames Processed: " + std::to_string(frame_count++));
+            dd.move_cursor(0, 1);
+            dd.write("Press 'q' to exit...");
+            dd.move_cursor(0, 2);
             sleep(1);
-            term.write(cpu_dog.display_utilization());
-            term.flush();
+            dd.write(cpu_dog.display_utilization());
+            dd.flush();
 
             // Cap the speed to reduce CPU overutilization
             std::this_thread::sleep_for(std::chrono::milliseconds(16));
