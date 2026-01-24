@@ -1,4 +1,4 @@
-#include "devel.h"
+#include "cpu.h"
 #include "terminal.h"
 #include <chrono>
 #include <string>
@@ -14,7 +14,7 @@ int main() {
 
     try {
         Terminal term;
-        DevelDog devel_dog = DevelDog(PROC_PATH);
+        CPUDog cpu_dog = CPUDog(PROC_PATH);
 
         bool running = true;
         int frame_count = 0;
@@ -33,7 +33,7 @@ int main() {
             term.write("Press 'q' to exit...");
             term.move_cursor(0, 2);
             sleep(1);
-            term.write(devel_dog.display_utilization());
+            term.write(cpu_dog.display_utilization());
             term.flush();
 
             // Cap the speed to reduce CPU overutilization

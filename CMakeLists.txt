@@ -13,7 +13,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOURCES
     src/main.cpp
-    external/devel.cpp
+    external/cpu.cpp
     src/terminal.cpp
 )
 

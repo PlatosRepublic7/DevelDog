@@ -1,4 +1,4 @@
-#include "devel.h"
+#include "cpu.h"
 #include <cmath>
 #include <format>
 #include <fstream>
@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 // Constructor
-DevelDog::DevelDog(const std::string file_path) : m_file_path(file_path) {
+CPUDog::CPUDog(const std::string file_path) : m_file_path(file_path) {
     m_num_cpus = 0;
     m_num_keys = 0;
     m_cur_data_map = {};
@@ -18,7 +18,7 @@ DevelDog::DevelDog(const std::string file_path) : m_file_path(file_path) {
     m_cpu_utilization_map = {};
 }
 
-std::string DevelDog::display_utilization() {
+std::string CPUDog::display_utilization() {
     if (m_cur_data_map.empty()) {
         m_cur_data_map = stat_query();
         for (auto it = m_cur_data_map.begin(); it != m_cur_data_map.end(); ++it) {
@@ -36,7 +36,7 @@ std::string DevelDog::display_utilization() {
     return (render_utilization(m_cpu_utilization_map));
 }
 
-std::string DevelDog::render_utilization(std::map<std::string, float> &cpu_utilization_map) {
+std::string CPUDog::render_utilization(std::map<std::string, float> &cpu_utilization_map) {
     std::string out_string = "";
 
     for (int i = 0; i < m_num_cpus; ++i) {
@@ -48,7 +48,7 @@ std::string DevelDog::render_utilization(std::map<std::string, float> &cpu_utili
     return out_string;
 }
 
-std::string DevelDog::progress_bar(float util_percent) {
+std::string CPUDog::progress_bar(float util_percent) {
     std::string prog_char = "|";
 
     int bar_width = 50;
@@ -76,7 +76,7 @@ std::string DevelDog::progress_bar(float util_percent) {
     return prog_bar;
 }
 
-std::string DevelDog::get_color(float util_percent) {
+std::string CPUDog::get_color(float util_percent) {
     // Clamp the value to ensure it's never negative
     if (util_percent < 0) {
         util_percent = 0;
@@ -97,7 +97,7 @@ std::string DevelDog::get_color(float util_percent) {
     }
 }
 
-std::map<std::string, std::vector<u_int64_t>> DevelDog::stat_query() {
+std::map<std::string, std::vector<u_int64_t>> CPUDog::stat_query() {
     std::ifstream file(m_file_path);
     std::string file_line;
     std::vector<std::string> data_vec;
@@ -147,8 +147,8 @@ std::map<std::string, std::vector<u_int64_t>> DevelDog::stat_query() {
 }
 
 std::map<std::string, float>
-DevelDog::calculate_cpu_utilization(std::map<std::string, std::vector<u_int64_t>> &cur_data_map,
-                                    std::map<std::string, std::vector<u_int64_t>> &prev_data_map) {
+CPUDog::calculate_cpu_utilization(std::map<std::string, std::vector<u_int64_t>> &cur_data_map,
+                                  std::map<std::string, std::vector<u_int64_t>> &prev_data_map) {
 
     std::map<std::string, float> cpu_utilization_map;
     std::map<std::string, std::vector<float>> delta_map;
