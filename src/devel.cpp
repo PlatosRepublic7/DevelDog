@@ -1,10 +1,10 @@
-#include "terminal.h"
+#include "devel.h"
 #include <fcntl.h> // For non-blocking
 #include <iostream>
 #include <termios.h>
 #include <unistd.h>
 
-Terminal::Terminal() {
+DevelDog::DevelDog() {
     // Save original state
     tcgetattr(STDIN_FILENO, &original_termios);
 
@@ -23,7 +23,7 @@ Terminal::Terminal() {
     std::cout.flush();
 }
 
-Terminal::~Terminal() {
+DevelDog::~DevelDog() {
     // Exit alternate buffer and show cursor
     std::cout << "\e[?1049l";
     std::cout << "\e[?25h";
@@ -33,8 +33,8 @@ Terminal::~Terminal() {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &original_termios);
 }
 
-void Terminal::move_cursor(int x, int y) { std::cout << "\e[" << y + 1 << ";" << x + 1 << "H"; }
+void DevelDog::move_cursor(int x, int y) { std::cout << "\e[" << y + 1 << ";" << x + 1 << "H"; }
 
-void Terminal::write(const std::string &text) { std::cout << text; }
+void DevelDog::write(const std::string &text) { std::cout << text; }
 
-void Terminal::flush() { std::cout.flush(); }
+void DevelDog::flush() { std::cout.flush(); }

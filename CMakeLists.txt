@@ -14,7 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SOURCES
     src/main.cpp
     external/cpu.cpp
-    src/terminal.cpp
+    src/devel.cpp
 )
 
 add_executable(devel_dog ${SOURCES})
