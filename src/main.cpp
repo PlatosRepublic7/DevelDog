@@ -1,6 +1,7 @@
 #include "cpu.h"
 #include "devel.h"
 #include <chrono>
+#include <iostream>
 #include <string>
 #include <thread>
 #include <unistd.h>
@@ -19,7 +20,7 @@ int main() {
         bool running = true;
         int frame_count = 0;
         char c;
-
+        dd.run();
         while (running) {
             // Input handling (non-blocking)
             // read() returns -1 immediately if no key is pressed
@@ -39,7 +40,9 @@ int main() {
             // Cap the speed to reduce CPU overutilization
             std::this_thread::sleep_for(std::chrono::milliseconds(16));
         }
-    } catch (...) {
+        dd.stop();
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
     }
     return 0;
 }

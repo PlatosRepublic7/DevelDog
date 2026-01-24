@@ -15,12 +15,13 @@ set(SOURCES
     src/main.cpp
     external/cpu.cpp
     src/devel.cpp
+    engine/engine.cpp
 )
 
 add_executable(devel_dog ${SOURCES})
 
 target_include_directories(
-    devel_dog PRIVATE external
+    devel_dog PRIVATE external engine
 )
 
 set_target_properties(devel_dog
