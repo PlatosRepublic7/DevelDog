@@ -12,16 +12,16 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOURCES
-    src/main.cpp
-    external/cpu.cpp
+    examples/main.cpp
+    examples/cpu.cpp
     src/devel.cpp
-    renderer/renderer.cpp
+    src/renderer.cpp
 )
 
 add_executable(devel_dog ${SOURCES})
 
 target_include_directories(
-    devel_dog PRIVATE external renderer
+    devel_dog PRIVATE examples include/dd
 )
 
 set_target_properties(devel_dog
