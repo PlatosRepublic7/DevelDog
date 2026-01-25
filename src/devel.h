@@ -5,6 +5,8 @@
 #include <termios.h>
 
 class DevelDog {
+    struct termios original_termios;
+
   public:
     DevelDog();
 
