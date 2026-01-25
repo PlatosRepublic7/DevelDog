@@ -13,14 +13,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOURCES
     src/main.cpp
-    external/devel.cpp
-    src/terminal.cpp
+    external/cpu.cpp
+    src/devel.cpp
+    renderer/renderer.cpp
 )
 
 add_executable(devel_dog ${SOURCES})
 
 target_include_directories(
-    devel_dog PRIVATE external
+    devel_dog PRIVATE external renderer
 )
 
 set_target_properties(devel_dog

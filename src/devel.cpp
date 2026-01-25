@@ -1,10 +1,20 @@
-#include "terminal.h"
-#include <fcntl.h> // For non-blocking
+#include "devel.h"
+#include "renderer.h"
+#include <fcntl.h>
 #include <iostream>
 #include <termios.h>
 #include <unistd.h>
 
-Terminal::Terminal() {
+DevelDog::DevelDog() { m_renderer = std::make_unique<Renderer>(); }
+
+void DevelDog::move_cursor(int x, int y) { m_renderer->move_cursor(x, y); }
+
+void DevelDog::write(const std::string &text) { m_renderer->write(text); }
+
+void DevelDog::flush() { m_renderer->flush(); }
+
+void DevelDog::run() {
+
     // Save original state
     tcgetattr(STDIN_FILENO, &original_termios);
 
@@ -23,7 +33,7 @@ Terminal::Terminal() {
     std::cout.flush();
 }
 
-Terminal::~Terminal() {
+void DevelDog::stop() {
     // Exit alternate buffer and show cursor
     std::cout << "\e[?1049l";
     std::cout << "\e[?25h";
@@ -32,9 +42,3 @@ Terminal::~Terminal() {
     // Restore original terminal settings
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &original_termios);
 }
-
-void Terminal::move_cursor(int x, int y) { std::cout << "\e[" << y + 1 << ";" << x + 1 << "H"; }
-
-void Terminal::write(const std::string &text) { std::cout << text; }
-
-void Terminal::flush() { std::cout.flush(); }

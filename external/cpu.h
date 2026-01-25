@@ -2,9 +2,9 @@
 #include <map>
 #include <string>
 #include <vector>
-class DevelDog {
+class CPUDog {
   public:
-    DevelDog(const std::string file_path);
+    CPUDog(const std::string file_path);
     std::string display_utilization();
 
   private:
