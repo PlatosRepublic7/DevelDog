@@ -3,19 +3,21 @@
 echo "Removing old build files..."
 rm -rf build release
 
+# We should build using Debug for the time begin, before moving
+# on to RelWithDebInfo and then finally Release
 echo "Configuring build..."
 mkdir build release
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 if [ $? -ne 0 ]; then
-  echo "Build configuration failed. Exiting..."
-  exit 1
+    echo "Build configuration failed. Exiting..."
+    exit 1
 fi
 
 echo "Building..."
 cmake --build build
 if [ $? -ne 0 ]; then
-  echo "Build failed. Exiting..."
-  exit 1
+    echo "Build failed. Exiting..."
+    exit 1
 fi
 
 echo "Running Application..."
