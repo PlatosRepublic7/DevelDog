@@ -1,22 +1,22 @@
-#include "color.h"
+#include "box.h"
 #include "devel.h"
 #include "label.h"
 
 int main() {
-    dd::DevelDog dog(true);
+    dd::DevelDog dog;
 
-    // Create a few labels with different styles
-    dd::Style title_style;
-    title_style.fg = dd::ColorName::Cyan;
-    title_style.attributes = (uint8_t)dd::Attribute::Bold;
+    dd::Style box_style;
+    box_style.fg = dd::ColorName::Green;
 
-    dd::Style subtle_style;
-    subtle_style.fg = dd::ColorName::White;
+    dd::Style text_style;
+    text_style.fg = dd::ColorName::White;
+    text_style.attributes = (uint8_t)dd::Attribute::Bold;
 
-    // Attach the labels
-    dog.attach_component(std::make_unique<dd::Label>(10, 2, "DEVELDOG TUI v0.1", title_style));
-    dog.attach_component(
-        std::make_unique<dd::Label>(10, 4, "Press 'q' to exit safely...", subtle_style));
+    // Attach a large box
+    dog.attach_component(std::make_unique<dd::Box>(5, 2, 40, 10, box_style));
+
+    // Attach a label within the box
+    dog.attach_component(std::make_unique<dd::Label>(8, 4, "SYSTEM STATUS: ACTIVE", text_style));
 
     dog.start();
 
