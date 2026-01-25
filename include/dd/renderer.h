@@ -8,7 +8,7 @@ class Renderer {
     Renderer() = default;
 
     // Compile the entire buffer into one ANSI-encoded string
-    std::string render(const Buffer &buffer);
+    std::string render(const Buffer &buffer, bool debug_state);
 
   private:
     // Helper to turn Style struct into ANSI escape codes

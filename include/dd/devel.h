@@ -1,5 +1,6 @@
 #pragma once
 #include "buffer.h"
+#include "component.h"
 #include "renderer.h"
 #include <memory>
 #include <termios.h>
@@ -7,7 +8,7 @@
 namespace dd {
 class DevelDog {
   public:
-    DevelDog();
+    DevelDog(bool debug_state = false);
     ~DevelDog();
 
     // Prevent copying
@@ -20,7 +21,9 @@ class DevelDog {
 
     Buffer &get_buffer();
 
-    // Future: void attach(std::unique_ptr<Component> component);
+    void attach_component(std::unique_ptr<Component> comp) {
+        m_components.push_back(std::move(comp));
+    }
 
   private:
     void init_terminal();
@@ -28,6 +31,7 @@ class DevelDog {
     void main_loop();
     void update_dimensions();
 
+    bool m_debug_state;
     bool m_is_running;
     struct termios m_original_settings;
 
@@ -36,5 +40,6 @@ class DevelDog {
 
     std::unique_ptr<Buffer> m_back_buffer;
     std::unique_ptr<Renderer> m_renderer;
+    std::vector<std::unique_ptr<Component>> m_components;
 };
 } // namespace dd

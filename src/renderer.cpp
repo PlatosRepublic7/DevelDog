@@ -2,8 +2,13 @@
 #include <variant>
 
 namespace dd {
-std::string Renderer::render(const Buffer &buffer) {
+std::string Renderer::render(const Buffer &buffer, bool debug_state) {
     std::string output;
+    char null_char = ' ';
+
+    if (debug_state) {
+        null_char = '.';
+    }
 
     output.reserve(buffer.get_width() * buffer.get_height() * 12);
 
@@ -18,7 +23,7 @@ std::string Renderer::render(const Buffer &buffer) {
 
             // If content is null or 0, draw a space
             if (cell.content == 0 || cell.content == ' ') {
-                output += '.';
+                output += null_char;
             } else {
                 output += static_cast<char>(cell.content);
             }

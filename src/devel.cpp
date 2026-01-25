@@ -7,7 +7,8 @@
 #include <unistd.h>
 
 namespace dd {
-DevelDog::DevelDog() : m_is_running(false), m_width(0), m_height(0) {
+DevelDog::DevelDog(bool debug_state)
+    : m_debug_state(debug_state), m_is_running(false), m_width(0), m_height(0) {
     m_renderer = std::make_unique<Renderer>();
     m_back_buffer = std::make_unique<Buffer>(m_width, m_height);
 }
@@ -57,12 +58,18 @@ void DevelDog::main_loop() {
             break;
         }
 
-        Style test_style;
-        test_style.fg = ColorName::Red;
-        m_back_buffer->set_cell(5, 5, {'!', test_style});
+        m_back_buffer->clear();
+
+        // Style test_style;
+        // test_style.fg = ColorName::Red;
+        // m_back_buffer->set_cell(5, 5, {'!', test_style});
+
+        for (auto &comp : m_components) {
+            comp->draw(*m_back_buffer);
+        }
 
         // Render compilation
-        std::string frame = m_renderer->render(*m_back_buffer);
+        std::string frame = m_renderer->render(*m_back_buffer, m_debug_state);
 
         // Output to terminal
         // std::cout << frame;
