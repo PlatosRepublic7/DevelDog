@@ -1,16 +1,16 @@
 #include "devel.h"
-#include "engine.h"
+#include "renderer.h"
 #include <termios.h>
 #include <unistd.h>
 
-DevelDog::DevelDog() { m_engine = std::make_unique<Engine>(); }
+DevelDog::DevelDog() { m_renderer = std::make_unique<Renderer>(); }
 
-void DevelDog::move_cursor(int x, int y) { m_engine->move_cursor(x, y); }
+void DevelDog::move_cursor(int x, int y) { m_renderer->move_cursor(x, y); }
 
-void DevelDog::write(const std::string &text) { m_engine->write(text); }
+void DevelDog::write(const std::string &text) { m_renderer->write(text); }
 
-void DevelDog::flush() { m_engine->flush(); }
+void DevelDog::flush() { m_renderer->flush(); }
 
-void DevelDog::run() { m_engine->run(); }
+void DevelDog::run() { m_renderer->run(); }
 
-void DevelDog::stop() { m_engine->stop(); }
+void DevelDog::stop() { m_renderer->stop(); }

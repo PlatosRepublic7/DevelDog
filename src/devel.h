@@ -1,5 +1,5 @@
 #pragma once
-#include "engine.h"
+#include "renderer.h"
 #include <memory>
 #include <string>
 #include <termios.h>
@@ -16,5 +16,5 @@ class DevelDog {
     void stop();
 
   private:
-    std::unique_ptr<Engine> m_engine;
+    std::unique_ptr<Renderer> m_renderer;
 };

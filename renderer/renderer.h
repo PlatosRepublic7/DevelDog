@@ -2,11 +2,11 @@
 #include <string>
 #include <termios.h>
 
-class Engine {
+class Renderer {
     struct termios original_termios;
 
   public:
-    Engine();
+    Renderer();
 
     void run();
     void stop();

@@ -1,12 +1,12 @@
-#include "engine.h"
+#include "renderer.h"
 #include <fcntl.h> // For non-blocking
 #include <iostream>
 #include <termios.h>
 #include <unistd.h>
 
-Engine::Engine() {}
+Renderer::Renderer() {}
 
-void Engine::run() {
+void Renderer::run() {
     // Save original state
     tcgetattr(STDIN_FILENO, &original_termios);
 
@@ -25,7 +25,7 @@ void Engine::run() {
     std::cout.flush();
 }
 
-void Engine::stop() {
+void Renderer::stop() {
     // Exit alternate buffer and show cursor
     std::cout << "\e[?1049l";
     std::cout << "\e[?25h";
@@ -35,8 +35,8 @@ void Engine::stop() {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &original_termios);
 }
 
-void Engine::move_cursor(int x, int y) { std::cout << "\e[" << y + 1 << ";" << x + 1 << "H"; }
+void Renderer::move_cursor(int x, int y) { std::cout << "\e[" << y + 1 << ";" << x + 1 << "H"; }
 
-void Engine::write(const std::string &text) { std::cout << text; }
+void Renderer::write(const std::string &text) { std::cout << text; }
 
-void Engine::flush() { std::cout.flush(); }
+void Renderer::flush() { std::cout.flush(); }
