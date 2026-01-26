@@ -2,8 +2,13 @@
 #include <variant>
 
 namespace dd {
-std::string Renderer::render(const Buffer &buffer) {
+std::string Renderer::render(const Buffer &buffer, bool debug_state) {
     std::string output;
+    char null_char = ' ';
+
+    if (debug_state) {
+        null_char = '.';
+    }
 
     output.reserve(buffer.get_width() * buffer.get_height() * 12);
 
@@ -18,7 +23,7 @@ std::string Renderer::render(const Buffer &buffer) {
 
             // If content is null or 0, draw a space
             if (cell.content == 0 || cell.content == ' ') {
-                output += '.';
+                output += null_char;
             } else {
                 output += static_cast<char>(cell.content);
             }
@@ -52,6 +57,23 @@ std::string Renderer::format_style(const Style &style) {
             }
         },
         style.fg);
+
+    // Background logic
+    std::visit(
+        [&ansi](auto &&arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, ColorName>) {
+                if (arg != ColorName::Default) {
+                    // ANSI background colors 40-47, 100-107
+                    int code = 40 + static_cast<int>(arg) - 1;
+                    ansi += "\e[" + std::to_string(code) + "m";
+                }
+            } else if constexpr (std::is_same_v<T, RGB>) {
+                ansi += "\e[48;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
+                        std::to_string(arg.b) + "m";
+            }
+        },
+        style.bg);
 
     // Attribute logic
     if (style.attributes & static_cast<uint8_t>(Attribute::Bold)) {
