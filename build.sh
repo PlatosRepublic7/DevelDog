@@ -1,5 +1,15 @@
 #!/bin/bash
 
+ARG=$1
+run_app_toggle=0
+
+if [[ $ARG -eq "APP" ]]; then
+    build_app_flag="-DBUILD_APP=OFF"
+else
+    build_app_flag="-DBUILD_APP=ON"
+    run_app_toggle=1
+fi
+
 echo "Removing old build files..."
 rm -rf build release
 
@@ -7,7 +17,7 @@ rm -rf build release
 # on to RelWithDebInfo and then finally Release
 echo "Configuring build..."
 mkdir build release
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug ${build_app_flag} -DCMAKE_INSTALL_PREFIX=./release
 if [ $? -ne 0 ]; then
     echo "Build configuration failed. Exiting..."
     exit 1
@@ -20,5 +30,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Running Application..."
-./release/devel_dog
+echo "Installing..."
+cmake --install build
+
+echo "Testing..."
+ctest --test-dir build -j $(nproc) --output-on-failure
+
+if [[ $run_app_toggle -eq 1 ]]; then
+    echo "Running Application..."
+    ./release/bin/devel_dog
+fi

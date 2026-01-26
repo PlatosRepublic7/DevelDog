@@ -11,20 +11,63 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(SOURCES
-    progress/main.cpp
+# Define some options so we can toggle features for the build configuration
+option(BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
+option(BUILD_APP "Build progress/main.cpp app" ON)
+option(BUILD_TESTS "Build Unit Tests" ON)
+
+# The Library
+add_library(dd_lib
     src/devel.cpp
     src/renderer.cpp
 )
 
-add_executable(devel_dog ${SOURCES})
-
-target_include_directories(
-    devel_dog PRIVATE include/dd
+set_target_properties(dd_lib PROPERTIES
+    OUTPUT_NAME "dd"
+    DEBUG_POSTFIX "_debug"  # This will only apply to Debug builds
 )
 
-set_target_properties(devel_dog
-    PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-    "${CMAKE_SOURCE_DIR}/release"
+target_include_directories(dd_lib PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/dd>
+    $<INSTALL_INTERFACE:include/dd>
 )
+
+set(install_targets dd_lib)
+
+# Build the app
+if(BUILD_APP)
+    add_executable(devel_dog progress/main.cpp)
+    target_link_libraries(devel_dog PRIVATE dd_lib)
+    set(install_targets dd_lib devel_dog)
+endif()
+
+# Installation
+install(TARGETS ${install_targets}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)
+
+# This handles the headers
+install(DIRECTORY include/dd DESTINATION include)
+
+# Tests
+if(BUILD_TESTS)
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.17.0
+        GIT_SHALLOW TRUE
+    )
+
+    FetchContent_MakeAvailable(googletest)
+    # For Windows compatibility, it's good practice
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    enable_testing()
+
+    add_subdirectory(tests)
+
+    #    add_test(NAME CoreLogicTest COMMAND unit_tests)
+endif()
 
