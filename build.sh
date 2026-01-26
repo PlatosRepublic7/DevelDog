@@ -33,7 +33,7 @@ fi
 echo "Installing..."
 cmake --install build
 
-echo "Testing..."
+echo "Testing with $(nproc) threads..."
 ctest --test-dir build -j $(nproc) --output-on-failure
 
 if [[ "$run_app_toggle" == "1" ]]; then

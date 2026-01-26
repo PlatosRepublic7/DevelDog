@@ -20,6 +20,7 @@ option(BUILD_TESTS "Build Unit Tests" ON)
 add_library(dd_lib
     src/devel.cpp
     src/renderer.cpp
+    src/buffer.cpp
 )
 
 set_target_properties(dd_lib PROPERTIES

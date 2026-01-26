@@ -23,38 +23,27 @@ class Buffer {
     std::vector<Cell> m_cells;
 
   public:
-    Buffer(int w, int h) : m_width(w), m_height(h), m_cells(w * h, Cell{}) {}
+    Buffer(int w, int h);
 
     // We will use a flat vector for performance: index = y * width + x
-    int get_index(int x, int y) const { return (y * m_width) + x; }
+    int get_index(int x, int y) const;
 
     // Set a specific cell's data
-    void set_cell(int x, int y, const Cell &cell) {
-        if (x >= 0 && x < m_width && y >= 0 && y < m_height) {
-            m_cells[get_index(x, y)] = cell;
-        }
-    }
+    void set_cell(int x, int y, const Cell &cell) noexcept;
 
     // Retrieve a cell
-    const Cell &get_cell(int x, int y) const { return m_cells[get_index(x, y)]; }
+    const Cell &get_cell(int x, int y) const noexcept;
 
     // Reset the entire Buffer
-    void clear() {
-        for (auto &cell : m_cells) {
-            cell.content = ' ';
-            cell.style = Style{};
-        }
-    }
+    void clear();
+
+    size_t get_size() const;
 
     // Resizing the Buffer
-    void resize(int new_w, int new_h) {
-        m_width = new_w;
-        m_height = new_h;
-        m_cells.assign(m_width * m_height, Cell{});
-    }
+    void resize(int new_w, int new_h);
 
     // Getters for dimensions
-    int get_width() const { return m_width; }
-    int get_height() const { return m_height; }
+    int get_width() const;
+    int get_height() const;
 };
 } // namespace dd
