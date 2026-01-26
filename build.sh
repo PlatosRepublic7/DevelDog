@@ -1,13 +1,13 @@
 #!/bin/bash
 
 ARG=$1
-run_app_toggle=0
+run_app_toggle="0"
 
-if [[ $ARG -eq "APP" ]]; then
+if [[ "$ARG" != "APP" ]]; then
     build_app_flag="-DBUILD_APP=OFF"
 else
     build_app_flag="-DBUILD_APP=ON"
-    run_app_toggle=1
+    run_app_toggle="1"
 fi
 
 echo "Removing old build files..."
@@ -36,7 +36,7 @@ cmake --install build
 echo "Testing..."
 ctest --test-dir build -j $(nproc) --output-on-failure
 
-if [[ $run_app_toggle -eq 1 ]]; then
+if [[ "$run_app_toggle" == "1" ]]; then
     echo "Running Application..."
     ./release/bin/devel_dog
 fi
