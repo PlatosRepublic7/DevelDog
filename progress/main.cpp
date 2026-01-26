@@ -3,10 +3,11 @@
 #include "label.h"
 
 int main() {
-    dd::DevelDog dog;
+    dd::DevelDog dog(true);
 
     dd::Style box_style;
-    box_style.fg = dd::ColorName::Green;
+    box_style.fg = dd::ColorName::BrightWhite;
+    box_style.bg = dd::ColorName::Blue;
 
     dd::Style text_style;
     text_style.fg = dd::ColorName::White;

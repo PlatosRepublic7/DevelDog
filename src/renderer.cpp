@@ -58,6 +58,23 @@ std::string Renderer::format_style(const Style &style) {
         },
         style.fg);
 
+    // Background logic
+    std::visit(
+        [&ansi](auto &&arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, ColorName>) {
+                if (arg != ColorName::Default) {
+                    // ANSI background colors 40-47, 100-107
+                    int code = 40 + static_cast<int>(arg) - 1;
+                    ansi += "\e[" + std::to_string(code) + "m";
+                }
+            } else if constexpr (std::is_same_v<T, RGB>) {
+                ansi += "\e[48;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
+                        std::to_string(arg.b) + "m";
+            }
+        },
+        style.bg);
+
     // Attribute logic
     if (style.attributes & static_cast<uint8_t>(Attribute::Bold)) {
         ansi += "\e[1m";
