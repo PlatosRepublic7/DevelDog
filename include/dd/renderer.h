@@ -20,6 +20,8 @@ class Renderer {
     // Helper to turn Style struct into ANSI escape codes
     std::string format_style(const Style &style);
 
+    std::string to_utf8(char32_t cp);
+
     std::string move_cursor(int x, int y);
 };
 } // namespace dd
