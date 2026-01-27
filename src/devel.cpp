@@ -1,7 +1,6 @@
 #include "devel.h"
 #include <asm-generic/ioctls.h>
 #include <fcntl.h>
-#include <iostream>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
@@ -16,6 +15,7 @@ void DevelDog::init_terminal() {
     // Get current window size using ioctl
     get_window_dimensions();
     m_back_buffer = std::make_unique<Buffer>(m_width, m_height);
+    m_front_buffer = std::make_unique<Buffer>(m_width, m_height);
 
     // TTY Settings
     tcgetattr(STDIN_FILENO, &m_original_settings);
@@ -85,10 +85,13 @@ void DevelDog::main_loop() {
         }
 
         // Render compilation
-        std::string frame = m_renderer->render(*m_back_buffer, m_debug_state);
+        std::string frame = m_renderer->render(*m_back_buffer, *m_front_buffer, m_debug_state);
 
         // Write to terminal output and sleep
         ::write(STDOUT_FILENO, frame.data(), frame.size());
+
+        // Copy m_back_buffer to m_front_buffer for next frame
+        *m_front_buffer = *m_back_buffer;
 
         usleep(16666);
     }

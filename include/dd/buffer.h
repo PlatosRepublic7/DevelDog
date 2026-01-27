@@ -17,11 +17,6 @@ struct Cell {
 };
 
 class Buffer {
-  private:
-    int m_width;
-    int m_height;
-    std::vector<Cell> m_cells;
-
   public:
     Buffer(int w, int h);
 
@@ -45,5 +40,10 @@ class Buffer {
     // Getters for dimensions
     int get_width() const;
     int get_height() const;
+
+  private:
+    int m_width;
+    int m_height;
+    std::vector<Cell> m_cells;
 };
 } // namespace dd

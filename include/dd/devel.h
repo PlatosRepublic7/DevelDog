@@ -38,6 +38,7 @@ class DevelDog {
     int m_height;
 
     std::unique_ptr<Buffer> m_back_buffer;
+    std::unique_ptr<Buffer> m_front_buffer;
     std::unique_ptr<Renderer> m_renderer;
     std::vector<std::unique_ptr<Component>> m_components;
 };
