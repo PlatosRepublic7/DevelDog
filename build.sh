@@ -4,9 +4,9 @@ ARG=$1
 run_app_toggle="0"
 
 if [[ "$ARG" != "APP" ]]; then
-    build_app_flag="-DBUILD_APP=OFF"
+    build_app_flag="BUILD_APP=OFF"
 else
-    build_app_flag="-DBUILD_APP=ON"
+    build_app_flag="BUILD_APP=ON"
     run_app_toggle="1"
 fi
 
@@ -17,7 +17,12 @@ rm -rf build release
 # on to RelWithDebInfo and then finally Release
 echo "Configuring build..."
 mkdir build release
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug ${build_app_flag} -DCMAKE_INSTALL_PREFIX=./release
+cmake -S . -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_SHARED_LIBS=ON \
+    -D${build_app_flag} \
+    -DCMAKE_INSTALL_PREFIX=./release
+
 if [ $? -ne 0 ]; then
     echo "Build configuration failed. Exiting..."
     exit 1

@@ -5,7 +5,7 @@ add_executable(unit_tests
     buffer_test.cpp
 )
 
-target_link_libraries(unit_tests PRIVATE dd_lib GTest::gtest_main)
+target_link_libraries(unit_tests PRIVATE dd_static GTest::gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(unit_tests)

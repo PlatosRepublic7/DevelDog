@@ -2,7 +2,7 @@
 #include <variant>
 
 namespace dd {
-std::string Renderer::render(const Buffer &buffer, bool debug_state) {
+std::string Renderer::render(const Buffer &back, const Buffer &front, bool debug_state) {
     std::string output;
     char null_char = ' ';
 
@@ -10,26 +10,39 @@ std::string Renderer::render(const Buffer &buffer, bool debug_state) {
         null_char = '.';
     }
 
-    output.reserve(buffer.get_width() * buffer.get_height() * 12);
+    int width = back.get_width();
+    int height = back.get_height();
+    output.reserve(width * height * m_RESERVE_CONST);
 
     // Move cursor to 1, 1 without clearing
     output += "\e[H";
 
-    for (int y = 0; y < buffer.get_height(); ++y) {
-        for (int x = 0; x < buffer.get_width(); ++x) {
-            const Cell &cell = buffer.get_cell(x, y);
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const Cell &new_cell = back.get_cell(x, y);
+            const Cell &old_cell = front.get_cell(x, y);
+            Cell cell_to_draw = {};
 
-            output += format_style(cell.style);
+            // This is the beginning of the diffing logic
+            // it is by no means perfect, we are instead looking for a direct
+            // working replacement of what we had, albeit with a second buffer
+            if (new_cell != old_cell) {
+                cell_to_draw = new_cell;
+            } else {
+                cell_to_draw = old_cell;
+            }
+
+            output += format_style(cell_to_draw.style);
 
             // If content is null or 0, draw a space
-            if (cell.content == 0 || cell.content == ' ') {
+            if (cell_to_draw.content == 0 || cell_to_draw.content == ' ') {
                 output += null_char;
             } else {
-                output += static_cast<char>(cell.content);
+                output += static_cast<char>(cell_to_draw.content);
             }
         }
 
-        if (y < buffer.get_height() - 1) {
+        if (y < back.get_height() - 1) {
             output += "\r\n";
         }
     }

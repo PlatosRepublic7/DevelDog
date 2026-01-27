@@ -19,8 +19,6 @@ class DevelDog {
     void start();
     void stop();
 
-    Buffer &get_buffer();
-
     void attach_component(std::unique_ptr<Component> comp) {
         m_components.push_back(std::move(comp));
     }
@@ -29,7 +27,8 @@ class DevelDog {
     void init_terminal();
     void restore_terminal();
     void main_loop();
-    void update_dimensions();
+    void get_window_dimensions();
+    bool update_buffer_dimensions();
 
     bool m_debug_state;
     bool m_is_running;
@@ -39,6 +38,7 @@ class DevelDog {
     int m_height;
 
     std::unique_ptr<Buffer> m_back_buffer;
+    std::unique_ptr<Buffer> m_front_buffer;
     std::unique_ptr<Renderer> m_renderer;
     std::vector<std::unique_ptr<Component>> m_components;
 };

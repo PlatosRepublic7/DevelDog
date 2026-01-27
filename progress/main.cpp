@@ -3,7 +3,7 @@
 #include "label.h"
 
 int main() {
-    dd::DevelDog dog(true);
+    dd::DevelDog devel_term(true);
 
     dd::Style box_style;
     box_style.fg = dd::ColorName::BrightWhite;
@@ -14,12 +14,13 @@ int main() {
     text_style.attributes = (uint8_t)dd::Attribute::Bold;
 
     // Attach a large box
-    dog.attach_component(std::make_unique<dd::Box>(5, 2, 40, 10, box_style));
+    devel_term.attach_component(std::make_unique<dd::Box>(5, 2, 40, 10, box_style));
 
     // Attach a label within the box
-    dog.attach_component(std::make_unique<dd::Label>(8, 4, "SYSTEM STATUS: ACTIVE", text_style));
+    devel_term.attach_component(
+        std::make_unique<dd::Label>(8, 4, "SYSTEM STATUS: ACTIVE", text_style));
 
-    dog.start();
+    devel_term.start();
 
     return 0;
 }
