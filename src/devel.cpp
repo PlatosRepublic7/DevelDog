@@ -10,12 +10,11 @@ namespace dd {
 DevelDog::DevelDog(bool debug_state)
     : m_debug_state(debug_state), m_is_running(false), m_width(0), m_height(0) {
     m_renderer = std::make_unique<Renderer>();
-    m_back_buffer = std::make_unique<Buffer>(m_width, m_height);
 }
 
 void DevelDog::init_terminal() {
     // Get current window size using ioctl
-    update_dimensions();
+    get_window_dimensions();
     m_back_buffer = std::make_unique<Buffer>(m_width, m_height);
 
     // TTY Settings
@@ -27,16 +26,23 @@ void DevelDog::init_terminal() {
     // Non-blocking input
     fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
 
+    std::string startup_codes = "\e[?1049h\e[?25l\e[?7l";
     // Hardware switch: Alt buffer, hide cursor, clear
-    std::cout << "\e[?1049h\e[?25l";
-    std::cout.flush();
+    ::write(STDOUT_FILENO, startup_codes.data(), startup_codes.size());
 }
 
-void DevelDog::update_dimensions() {
+void DevelDog::get_window_dimensions() {
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     m_width = w.ws_col;
     m_height = w.ws_row;
+}
+
+bool DevelDog::update_buffer_dimensions() {
+    if (m_width != m_back_buffer->get_width() || m_height != m_back_buffer->get_height()) {
+        return true;
+    }
+    return false;
 }
 
 void DevelDog::start() {
@@ -58,12 +64,22 @@ void DevelDog::main_loop() {
             break;
         }
 
+        // Get current window dimensions
+        get_window_dimensions();
+
+        // Check to see if we need to update the buffer dimensions
+        // if so, update them, and force the terminal to clear the scroll buffer
+        if (update_buffer_dimensions()) {
+            m_back_buffer->resize(m_width, m_height);
+
+            // Immediate clear to resync with hardware
+            // ::write(STDOUT_FILENO, "\e[3J", 4);
+        }
+
+        // Clear the buffer contents in preparation for drawing
         m_back_buffer->clear();
 
-        // Style test_style;
-        // test_style.fg = ColorName::Red;
-        // m_back_buffer->set_cell(5, 5, {'!', test_style});
-
+        // Draw all components
         for (auto &comp : m_components) {
             comp->draw(*m_back_buffer);
         }
@@ -71,10 +87,7 @@ void DevelDog::main_loop() {
         // Render compilation
         std::string frame = m_renderer->render(*m_back_buffer, m_debug_state);
 
-        // Output to terminal
-        // std::cout << frame;
-        // std::cout.flush();
-
+        // Write to terminal output and sleep
         ::write(STDOUT_FILENO, frame.data(), frame.size());
 
         usleep(16666);
@@ -87,8 +100,8 @@ void DevelDog::stop() {
     m_is_running = false;
 
     // Reverse the hardware switch
-    std::cout << "\e[?1049l\e[?25h";
-    std::cout.flush();
+    std::string stop_codes = "\e[?1049l\e[?25h\e[?7h";
+    ::write(STDOUT_FILENO, stop_codes.data(), stop_codes.size());
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_original_settings);
 }
 
@@ -97,7 +110,5 @@ DevelDog::~DevelDog() {
     if (m_is_running)
         stop();
 }
-
-Buffer &DevelDog::get_buffer() { return *m_back_buffer; }
 
 } // namespace dd
