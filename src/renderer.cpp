@@ -50,7 +50,7 @@ std::string Renderer::render(const Buffer &back, const Buffer &front) {
 std::string Renderer::format_style(const Style &style) {
     // We use a single 'm' sequence to combine attributes for efficiency
     // Example: \e[0;31;44;1m (Reset, Red FG, Blue BG, Bold)
-    std::string ansi = "\e[0";
+    std::string ansi = "\e[";
 
     // Foreground
     std::visit(
@@ -62,7 +62,7 @@ std::string Renderer::format_style(const Style &style) {
                     ansi += ";" + std::to_string(code);
                 }
             } else if constexpr (std::is_same_v<T, RGB>) {
-                ansi += ";38;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
+                ansi += "38;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
                         std::to_string(arg.b);
             }
         },
@@ -81,7 +81,7 @@ std::string Renderer::format_style(const Style &style) {
                     ansi += ";49";
                 }
             } else if constexpr (std::is_same_v<T, RGB>) {
-                ansi += ";48;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
+                ansi += "48;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
                         std::to_string(arg.b);
             }
         },

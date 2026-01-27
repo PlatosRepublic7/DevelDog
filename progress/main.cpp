@@ -6,8 +6,7 @@ int main() {
     dd::DevelDog devel_term(false);
 
     dd::Style box_style;
-    box_style.fg = dd::ColorName::BrightWhite;
-    // box_style.bg = dd::ColorName::Blue;
+    box_style.fg = dd::RGB{221, 134, 58}; // Halloween Orange
 
     dd::Style text_style;
     text_style.fg = dd::ColorName::White;
