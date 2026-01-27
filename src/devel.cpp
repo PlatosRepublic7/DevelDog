@@ -71,9 +71,7 @@ void DevelDog::main_loop() {
         // if so, update them, and force the terminal to clear the scroll buffer
         if (update_buffer_dimensions()) {
             m_back_buffer->resize(m_width, m_height);
-
-            // Immediate clear to resync with hardware
-            // ::write(STDOUT_FILENO, "\e[3J", 4);
+            m_front_buffer->clear();
         }
 
         // Clear the buffer contents in preparation for drawing
@@ -84,8 +82,19 @@ void DevelDog::main_loop() {
             comp->draw(*m_back_buffer);
         }
 
+        if (m_debug_state) {
+            for (int y = 0; y < m_height; ++y) {
+                for (int x = 0; x < m_width; ++x) {
+                    if (m_back_buffer->get_cell(x, y).content == ' ') {
+                        Style cur_style = m_back_buffer->get_cell(x, y).style;
+                        m_back_buffer->set_cell(x, y, {'.', cur_style});
+                    }
+                }
+            }
+        }
+
         // Render compilation
-        std::string frame = m_renderer->render(*m_back_buffer, *m_front_buffer, m_debug_state);
+        std::string frame = m_renderer->render(*m_back_buffer, *m_front_buffer);
 
         // Write to terminal output and sleep
         ::write(STDOUT_FILENO, frame.data(), frame.size());

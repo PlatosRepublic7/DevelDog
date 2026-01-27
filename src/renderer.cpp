@@ -2,51 +2,48 @@
 #include <variant>
 
 namespace dd {
-std::string Renderer::render(const Buffer &back, const Buffer &front, bool debug_state) {
-    std::string output;
-    char null_char = ' ';
+Renderer::Renderer() : m_cursor_line_pos(0), m_cursor_row_pos(0) {};
 
-    if (debug_state) {
-        null_char = '.';
-    }
+std::vector<int> Renderer::get_cursor_loc() {
+    std::vector<int> cursor_loc = {m_cursor_row_pos, m_cursor_line_pos};
+    return cursor_loc;
+}
+
+std::string Renderer::render(const Buffer &back, const Buffer &front) {
+    std::string output;
+    Style last_style;
+    bool cursor_needs_move = false;
 
     int width = back.get_width();
     int height = back.get_height();
-    output.reserve(width * height * m_RESERVE_CONST);
-
-    // Move cursor to 1, 1 without clearing
-    output += "\e[H";
 
     for (int y = 0; y < height; ++y) {
+        cursor_needs_move = true;
         for (int x = 0; x < width; ++x) {
             const Cell &new_cell = back.get_cell(x, y);
             const Cell &old_cell = front.get_cell(x, y);
             Cell cell_to_draw = {};
 
-            // This is the beginning of the diffing logic
-            // it is by no means perfect, we are instead looking for a direct
-            // working replacement of what we had, albeit with a second buffer
             if (new_cell != old_cell) {
-                cell_to_draw = new_cell;
+                // If we aren't already at this position, move the cursor to this position
+                if (cursor_needs_move) {
+                    output += move_cursor(x, y);
+                    cursor_needs_move = false;
+                }
+
+                // Apply style (only if different from the last one)
+                if (new_cell.style != last_style) {
+                    output += format_style(new_cell.style);
+                    last_style = new_cell.style;
+                }
+
+                // Add the character
+                output += new_cell.content;
             } else {
-                cell_to_draw = old_cell;
+                cursor_needs_move = true;
             }
-
-            output += format_style(cell_to_draw.style);
-
-            // If content is null or 0, draw a space
-            if (cell_to_draw.content == 0 || cell_to_draw.content == ' ') {
-                output += null_char;
-            } else {
-                output += static_cast<char>(cell_to_draw.content);
-            }
-        }
-
-        if (y < back.get_height() - 1) {
-            output += "\r\n";
         }
     }
-
     return output;
 }
 
@@ -94,6 +91,14 @@ std::string Renderer::format_style(const Style &style) {
     }
 
     return ansi;
+}
+
+std::string Renderer::move_cursor(int x, int y) {
+    std::string move_code;
+    move_code = "\e[" + std::to_string(y + 1) + ";" + std::to_string(x + 1) + "H";
+    m_cursor_row_pos = x;
+    m_cursor_line_pos = y;
+    return move_code;
 }
 
 } // namespace dd
