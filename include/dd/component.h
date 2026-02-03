@@ -7,5 +7,9 @@ class Component {
     virtual ~Component() = default;
     // Every component must implement its own drawing logic
     virtual void draw(Buffer &buf) = 0;
+
+  private:
+    int m_width;
+    int m_height;
 };
 } // namespace dd

@@ -1,0 +1,22 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+# Personal Preference
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+Standard: c++20
+ColumnLimit: 100
+
+# Readability
+AlignAfterOpenBracket: Align
+BinPackArguments: false
+BinPackParameters: BinPack
+FixNamespaceComments: true
+NamespaceIndentation: None
+
+# Modern C++
+RequiresClausePosition: OwnLine
+BreakBeforeBraces: Attach
