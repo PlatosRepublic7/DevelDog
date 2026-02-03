@@ -41,24 +41,24 @@ set(lib_to_link dd_static)
 
 # Optionally build the shared library
 if(BUILD_SHARED_LIBS)
-    add_library(dd_shared SHARED ${LIB_SOURCES})
-    set_target_properties(dd_shared PROPERTIES
+  add_library(dd_shared SHARED ${LIB_SOURCES})
+  set_target_properties(dd_shared PROPERTIES
         OUTPUT_NAME "dd"
         DEBUG_POSTFIX "_debug"
     )
 
-    target_include_directories(dd_shared PUBLIC
+  target_include_directories(dd_shared PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/dd>
         $<INSTALL_INTERFACE:include/dd>
     )
-    list(APPEND install_targets dd_shared)
+  list(APPEND install_targets dd_shared)
 endif()
 
 # Build the app
 if(BUILD_APP)
-    add_executable(devel_dog progress/main.cpp)
-    target_link_libraries(devel_dog PRIVATE ${lib_to_link})
-    list(APPEND install_targets devel_dog)
+  add_executable(devel_dog progress/main.cpp)
+  target_link_libraries(devel_dog PRIVATE ${lib_to_link})
+  list(APPEND install_targets devel_dog)
 endif()
 
 # Installation
@@ -73,23 +73,23 @@ install(DIRECTORY include/dd DESTINATION include)
 
 # Tests
 if(BUILD_TESTS)
-    include(FetchContent)
-    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+  include(FetchContent)
+  set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 
-    FetchContent_Declare(
+  FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG v1.17.0
         GIT_SHALLOW TRUE
     )
 
-    FetchContent_MakeAvailable(googletest)
-    # For Windows compatibility, it's good practice
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    enable_testing()
+  FetchContent_MakeAvailable(googletest)
+  # For Windows compatibility, it's good practice
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  enable_testing()
 
-    add_subdirectory(tests)
+  add_subdirectory(tests)
 
-    #    add_test(NAME CoreLogicTest COMMAND unit_tests)
+  #    add_test(NAME CoreLogicTest COMMAND unit_tests)
 endif()
 

@@ -38,7 +38,7 @@ std::string Renderer::render(const Buffer &back, const Buffer &front) {
                 }
 
                 // Add the character
-                output += new_cell.content;
+                output += to_utf8(new_cell.content);
             } else {
                 cursor_needs_move = true;
             }
@@ -48,49 +48,74 @@ std::string Renderer::render(const Buffer &back, const Buffer &front) {
 }
 
 std::string Renderer::format_style(const Style &style) {
-    // Start with a reset to ensure no style bleed from previous calls
-    std::string ansi = "\e[0m";
+    // We use a single 'm' sequence to combine attributes for efficiency
+    // Example: \e[0;31;44;1m (Reset, Red FG, Blue BG, Bold)
+    std::string ansi = "\e[";
 
-    // Foreground logic
+    // Foreground
     std::visit(
         [&ansi](auto &&arg) {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, ColorName>) {
                 if (arg != ColorName::Default) {
-                    // ANSI foreground colors 30-37, 90-97
                     int code = 30 + static_cast<int>(arg) - 1;
-                    ansi += "\e[" + std::to_string(code) + "m";
+                    ansi += ";" + std::to_string(code);
                 }
             } else if constexpr (std::is_same_v<T, RGB>) {
-                ansi += "\e[38;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
-                        std::to_string(arg.b) + "m";
+                ansi += "38;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
+                        std::to_string(arg.b);
             }
         },
         style.fg);
 
-    // Background logic
+    // Background
     std::visit(
         [&ansi](auto &&arg) {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, ColorName>) {
                 if (arg != ColorName::Default) {
-                    // ANSI background colors 40-47, 100-107
                     int code = 40 + static_cast<int>(arg) - 1;
-                    ansi += "\e[" + std::to_string(code) + "m";
+                    ansi += ";" + std::to_string(code);
+                } else {
+                    // 49 is ANSII default background
+                    ansi += ";49";
                 }
             } else if constexpr (std::is_same_v<T, RGB>) {
-                ansi += "\e[48;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
-                        std::to_string(arg.b) + "m";
+                ansi += "48;2;" + std::to_string(arg.r) + ";" + std::to_string(arg.g) + ";" +
+                        std::to_string(arg.b);
             }
         },
         style.bg);
 
-    // Attribute logic
+    // Attributes
     if (style.attributes & static_cast<uint8_t>(Attribute::Bold)) {
-        ansi += "\e[1m";
+        ansi += ";1";
     }
 
+    ansi += "m";
     return ansi;
+}
+
+std::string Renderer::to_utf8(char32_t cp) {
+    if (cp == '0')
+        return " ";
+    std::string result;
+    if (cp <= 0x7F) {
+        result += static_cast<char>(cp);
+    } else if (cp <= 0x7FF) {
+        result += static_cast<char>(0xC0 | (cp >> 6));
+        result += static_cast<char>(0x80 | (cp & 0x3F));
+    } else if (cp <= 0xFFFF) {
+        result += static_cast<char>(0xE0 | (cp >> 12));
+        result += static_cast<char>(0x80 | ((cp >> 6) & 0x3F));
+        result += static_cast<char>(0x80 | (cp & 0x3F));
+    } else {
+        result += static_cast<char>(0xF0 | (cp >> 18));
+        result += static_cast<char>(0x80 | ((cp >> 12) & 0x3F));
+        result += static_cast<char>(0x80 | ((cp >> 6) & 0x3F));
+        result += static_cast<char>(0x80 | (cp & 0x3F));
+    }
+    return result;
 }
 
 std::string Renderer::move_cursor(int x, int y) {
